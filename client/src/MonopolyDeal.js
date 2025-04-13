@@ -6,7 +6,8 @@ import React, { useState, useEffect } from 'react';
 import io from 'socket.io-client';
 import { FaMoneyBill, FaHome, FaExchangeAlt, FaMagic } from 'react-icons/fa';
 
-const socket = io('http://localhost:3000'); // Update if deployed
+const socket = io('https://eirndeal.onrender.com'); // Update if deployed
+ // Update if deployed
 
 export default function MonopolyDeal() {
   const [roomId, setRoomId] = useState('');
