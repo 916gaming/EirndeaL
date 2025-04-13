@@ -1,14 +1,18 @@
-
 const express = require('express');
 const http = require('http');
-const { Server } = require('socket.io');
 const cors = require('cors');
+const { Server } = require('socket.io');
 
 const app = express();
 app.use(cors());
+
 const server = http.createServer(app);
+
 const io = new Server(server, {
-  cors: { origin: "*" }
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST']
+  }
 });
 
 let rooms = {};
@@ -54,6 +58,10 @@ function checkWinCondition(room) {
   }
   return false;
 }
+
+app.get('/', (req, res) => {
+  res.send('Backend is running!');
+});
 
 io.on('connection', (socket) => {
   console.log(`User connected: ${socket.id}`);
@@ -107,16 +115,13 @@ io.on('connection', (socket) => {
     if (!room.gameState.played[playerId]) room.gameState.played[playerId] = [];
     room.gameState.played[playerId].push(card);
 
-    // Simulate property set logic
     if (card.type === 'property' || card.type === 'wild') {
       if (!room.gameState.propertySets[playerId]) room.gameState.propertySets[playerId] = [];
       room.gameState.propertySets[playerId].push(card);
     }
 
-    // Check win condition
     if (checkWinCondition(room)) return;
 
-    // Move to next player
     nextPlayer(room);
     io.to(roomId).emit('gameUpdate', room.gameState);
   });
@@ -131,4 +136,3 @@ io.on('connection', (socket) => {
 
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => console.log(`Server running on port ${PORT}`));
-
